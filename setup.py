@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='collagram',
-    version='0.1',
-    url='http://github.com/adamrt/ducttape/',
+    version='0.1.1',
+    url='http://github.com/vurbmedia/collagram/',
     license='ISC',
     author='Adam Patterson',
     author_email='adam@adamrt.com',
