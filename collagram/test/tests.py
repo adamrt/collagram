@@ -46,5 +46,9 @@ class TestCollage(unittest.TestCase):
         assert self.user.filename.endswith('users/' + USER + '.jpg')
         self.assertEqual(self.user_path.filename, PATH_USERS + USER + '.jpg')
 
+    def test_dimensions(self):
+        self.assertEqual(self.user.width, 1500)
+        self.assertEqual(self.user.height, 300)
+
 if __name__ == '__main__':
     unittest.main()

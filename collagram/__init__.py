@@ -33,7 +33,7 @@ class Collage(object):
             raise AttributeError('You must specify either username and tag')
 
         if token is None:
-            raise MissingTokenError('INSTAGRAM_TOKEN environment variable or the `token` attribute must be set.')
+            raise Exception('INSTAGRAM_TOKEN environment variable or the `token` attribute must be set.')
 
         self.api = InstagramAPI(access_token=token)
 
@@ -44,6 +44,9 @@ class Collage(object):
         self.columns = columns
         self.rows = rows
         self.size = size
+        self.dimension = SIZE_DICT.get(self.size, 150)
+        self.width = self.columns * self.dimension
+        self.height = self.rows * self.dimension
 
     @property
     def name(self):
@@ -135,19 +138,16 @@ class Collage(object):
         after all collage is created.
         """
 
-        dimension = self.SIZE_DICT.get(self.size, 150)
-        blank_image = Image.new("RGB",
-                                (self.columns * dimension,
-                                 self.rows * dimension))
+        blank_image = Image.new("RGB", (self.width, self.height))
 
         x = y = 0
         for idx, url in enumerate(self.media_urls()):
-            image_from_url = cStringIO.StringIO(urllib.urlopen(url).read())
-            image = Image.open(image_from_url)
+            image_data = cStringIO.StringIO(urllib.urlopen(url).read())
+            image = Image.open(image_data)
             blank_image.paste(image, (x, y))
-            x += dimension
+            x += self.dimension
             if idx == (self.columns - 1):
                 x = 0
-                y += dimension
+                y += self.dimension
 
         blank_image.save(self.filename)
