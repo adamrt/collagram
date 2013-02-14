@@ -129,6 +129,17 @@ class Collage(object):
 
         return [m.images[self.size].url for m in self.media_json()]
 
+    def generate_or_queue(self, func=None, seconds=86400):
+        """Useful if using with a queue."""
+        if func is None:
+            raise Exception("Function must be provided.")
+
+        if self.is_cached():
+            if self.is_stale(seconds=seconds):
+                func(self.generate)
+        else:
+            self.generate()
+
     def generate(self):
         """Generate a collage
 

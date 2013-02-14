@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='collagram',
-    version='0.3',
+    version='0.4',
     author='Adam Patterson',
     author_email='adam@adamrt.com',
     url='http://github.com/vurbmedia/collagram/',
