@@ -129,14 +129,21 @@ class Collage(object):
 
         return [m.images[self.size].url for m in self.media_json()]
 
-    def generate_or_queue(self, func=None, seconds=86400):
-        """Useful if using with a queue."""
-        if func is None:
+    def generate_or_queue(self, queue_func=None, seconds=86400):
+        """Queue the generation if cached version is stale.
+
+        This is useful when you don't want to wait on the generation
+        function. The cached version will be returned if its not stale
+        and if there is no cached version, one has to be generated
+        right away. Just pass in your queue function and away we go!
+        """
+
+        if queue_func is None:
             raise Exception("Function must be provided.")
 
         if self.is_cached():
             if self.is_stale(seconds=seconds):
-                func(self.generate)
+                queue_func(self.generate)
         else:
             self.generate()
 
