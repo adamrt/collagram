@@ -145,10 +145,12 @@ class Collage(object):
     def generate_or_queue(self, queue_func=None, seconds=86400):
         """Queue the generation if cached version is stale.
 
-        This is useful when you don't want to wait on the generation
-        function. The cached version will be returned if its not stale
-        and if there is no cached version, one has to be generated
-        right away. Just pass in your queue function and away we go!
+        This is useful when you don't want to wait on the `generate`
+        function, if a cached version exists. If the cached version is
+        fresh, we pass. If it is stale we queue up a new one to be
+        generated.  If there is no cached version, one has to be
+        generated right away. Just pass in your queue function and
+        away we go!
         """
 
         if queue_func is None:
