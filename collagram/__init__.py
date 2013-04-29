@@ -54,6 +54,7 @@ class Collage(object):
 
         Username or tag prefixed with @ or # respectively.
         """
+
         if self.username:
             return '@%s' % self.username
         elif self.tag:
@@ -68,6 +69,7 @@ class Collage(object):
         Search for username via api and then check for matching
         username. If found return id, otherwise throw 404.
         """
+
         if self.username:
             rv = self.api.user_search(q=self.username)
             for result in rv:
@@ -77,6 +79,8 @@ class Collage(object):
 
     @property
     def filename(self):
+        """Return generated filename."""
+
         if self.username:
             return os.path.join(self.path_users, "%s.jpg" % self.username)
         elif self.tag:
@@ -129,8 +133,18 @@ class Collage(object):
 
         return [m.images[self.size].url for m in self.media_json()]
 
+    def ensure_path(self):
+        """Ensure that the path `self.generate()` will write to exists"""
+
+        if self.username and not os.path.exists(self.path_users):
+            os.makedirs(self.path_users)
+
+        if self.tag and not os.path.exists(self.path_tags):
+            os.makedirs(self.path_tags)
+
     def generate_or_queue(self, func=None, seconds=86400):
         """Useful if using with a queue."""
+
         if func is None:
             raise Exception("Function must be provided.")
 
@@ -161,4 +175,5 @@ class Collage(object):
                 x = 0
                 y += self.dimension
 
+        self.ensure_path()
         blank_image.save(self.filename)
