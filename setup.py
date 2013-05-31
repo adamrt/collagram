@@ -1,10 +1,8 @@
 import os
 import sys
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
+
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -12,14 +10,13 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='collagram',
-    version='0.7',
+    version='0.7.1',
     author='Adam Patterson',
     author_email='adam@adamrt.com',
     url='http://github.com/vurbmedia/collagram/',
     license='ISC',
     description='Generate collages of Instagram photographs.',
-    packages=['collagram'],
-    include_package_data=True,
+    py_modules=['collagram'],
     zip_safe=False,
     platforms='any',
     install_requires=[
