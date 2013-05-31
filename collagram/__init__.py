@@ -17,7 +17,15 @@ SIZE_DICT = {
 }
 
 
-class MissingTokenError(Exception):
+class InvalidUserError(Exception):
+    pass
+
+
+class PrivateUserError(Exception):
+    pass
+
+
+class InvalidTagError(Exception):
     pass
 
 
