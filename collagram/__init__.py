@@ -53,7 +53,7 @@ class Collage(object):
         self.path_tags = path_tags
         self.columns = columns
         self.rows = rows
-        self.size = size
+        self.size = size if size in SIZE_DICT else 'thumbnail'
         self.dimension = SIZE_DICT.get(self.size, 150)
         self.width = self.columns * self.dimension
         self.height = self.rows * self.dimension
@@ -92,9 +92,9 @@ class Collage(object):
         """Return generated filename."""
 
         if self.username:
-            return os.path.join(self.path_users, "%s.jpg" % self.username)
+            return os.path.join(self.path_users, "%s_%s.jpg" % (self.username, self.size))
         elif self.tag:
-            return os.path.join(self.path_tags, "%s.jpg" % self.tag)
+            return os.path.join(self.path_tags, "%s_%s.jpg" % (self.tag, self.size))
         else:
             return None
 

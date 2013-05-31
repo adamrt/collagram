@@ -12,6 +12,8 @@ PRIV_USER_ID = '243978586'
 TAG = 'vurbranch'
 BAD_TAG = 'jjjjjjjjjjjjjjjjjjjj'
 
+LARGE_SIZE = 'standard_resolution'
+
 PATH_USERS = '/tmp/collagram/media/users/'
 PATH_TAGS = '/tmp/collagram/media/tags/'
 
@@ -22,6 +24,9 @@ class TestCollage(unittest.TestCase):
         self.user = Collage(username=USER, path_users=PATH_USERS)
         self.bad_user = Collage(username=BAD_USER, path_users=PATH_USERS)
         self.priv_user = Collage(username=PRIV_USER, path_users=PATH_USERS)
+
+        self.user_large_size = Collage(username=USER, path_users=PATH_USERS, size=LARGE_SIZE)
+        self.user_invalid_size = Collage(username=USER, path_users=PATH_USERS, size='invalid_size')
 
         self.tag = Collage(tag=TAG)
         self.bad_tag = Collage(tag=BAD_TAG)
@@ -60,10 +65,10 @@ class TestCollage(unittest.TestCase):
         self.assertRaises(PrivateUserError, self.priv_user.media_json)
 
     def test_filename(self):
-        assert self.user.filename.endswith('users/' + USER + '.jpg')
-        assert self.bad_user.filename.endswith('users/' + BAD_USER + '.jpg')
-        assert self.priv_user.filename.endswith('users/' + PRIV_USER + '.jpg')
-        self.assertEqual(self.user_path.filename, PATH_USERS + USER + '.jpg')
+        assert self.user.filename.endswith('%s_thumbnail.jpg' % USER)
+        assert self.user_invalid_size.filename.endswith('%s_thumbnail.jpg' % USER)
+        assert self.user_large_size.filename.endswith('%s_standard_resolution.jpg' % USER)
+        self.assertEqual(self.user_path.filename, "%s%s_thumbnail.jpg" % (PATH_USERS, USER))
 
     def test_path(self):
         self.user_path.ensure_path()
@@ -80,6 +85,7 @@ class TestCollage(unittest.TestCase):
     def test_dimensions(self):
         self.assertEqual(self.user.width, 1500)
         self.assertEqual(self.user.height, 300)
+
 
 if __name__ == '__main__':
     unittest.main()
