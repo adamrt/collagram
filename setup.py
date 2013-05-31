@@ -1,4 +1,14 @@
-from distutils.core import setup
+import os
+import sys
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+if sys.argv[-1] == 'publish':
+    os.system('python setup.py sdist upload')
+    sys.exit()
 
 setup(
     name='collagram',
@@ -8,12 +18,12 @@ setup(
     url='http://github.com/vurbmedia/collagram/',
     license='ISC',
     description='Generate collages of Instagram photographs.',
-    packages=['collagram', 'collagram.test'],
+    packages=['collagram'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'PIL',
+        'Pillow',
         'python-instagram'
     ],
 )
