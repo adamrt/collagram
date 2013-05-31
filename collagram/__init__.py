@@ -4,7 +4,8 @@ from datetime import datetime
 import urllib
 
 from instagram.client import InstagramAPI
-import Image
+
+from PIL import Image
 
 INSTAGRAM_TOKEN = os.environ.get('INSTAGRAM_TOKEN')
 PATH_USERS = os.path.join(os.path.dirname(__file__), 'users')
