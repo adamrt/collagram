@@ -203,10 +203,10 @@ class Collage(object):
         after all collage is created.
         """
 
-        blank_image = Image.new("RGB", (self.width, self.height))
         if not self.is_valid():
             raise InvalidUserError("User %s does not exist." % self.username)
 
+        blank_image = Image.new("RGB", (self.width, self.height))
 
         x = y = 0
         for idx, url in enumerate(self.media_urls()):
