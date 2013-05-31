@@ -98,6 +98,13 @@ class Collage(object):
             return None
 
     def is_cached(self):
+    def is_valid(self):
+        """Check if the username is valid."""
+
+        if not self.user_id:
+            return False
+        return True
+
         """Check for existing version of file"""
 
         return True if os.path.exists(self.filename) else False
