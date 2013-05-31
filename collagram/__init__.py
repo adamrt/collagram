@@ -3,6 +3,7 @@ import cStringIO
 from datetime import datetime
 import urllib
 
+from instagram.bind import InstagramAPIError
 from instagram.client import InstagramAPI
 
 from PIL import Image
@@ -97,7 +98,6 @@ class Collage(object):
         else:
             return None
 
-    def is_cached(self):
     def is_valid(self):
         """Check if the username is valid."""
 
@@ -105,6 +105,7 @@ class Collage(object):
             return False
         return True
 
+    def is_cached(self):
         """Check for existing version of file"""
 
         return True if os.path.exists(self.filename) else False
@@ -137,10 +138,25 @@ class Collage(object):
     def media_json(self):
         """Username/tag specific JSON from instagram's API."""
 
-        if self.username:
-            return self.api.user_recent_media(user_id=self.user_id)[0]
+        if self.user_id:
+            try:
+                return self.api.user_recent_media(user_id=self.user_id)[0]
+            except InstagramAPIError as e:
+                if e.status_code == 400:
+                    raise PrivateUserError("You don't have permission to view this user")
+                else:
+                    raise Exception('Unknow status: %s, Message: %s' % (e.status_code, e.error_message))
+            except:
+                raise Exception
+
         elif self.tag:
-            return self.api.tag_recent_media(tag_name=self.tag)[0]
+            try:
+                return self.api.tag_recent_media(tag_name=self.tag)[0]
+            except InstagramAPIError as e:
+                raise InvalidTagError('Unable to find tag')
+            except:
+                raise Exception
+
         else:
             return None
 
@@ -188,6 +204,9 @@ class Collage(object):
         """
 
         blank_image = Image.new("RGB", (self.width, self.height))
+        if not self.is_valid():
+            raise InvalidUserError("User %s does not exist." % self.username)
+
 
         x = y = 0
         for idx, url in enumerate(self.media_urls()):
