@@ -65,10 +65,16 @@ class TestCollage(unittest.TestCase):
         self.assertRaises(PrivateUserError, self.priv_user.media_json)
 
     def test_filename(self):
-        assert self.user.filename.endswith('%s_thumbnail.jpg' % USER)
-        assert self.user_invalid_size.filename.endswith('%s_thumbnail.jpg' % USER)
-        assert self.user_large_size.filename.endswith('%s_standard_resolution.jpg' % USER)
-        self.assertEqual(self.user_path.filename, "%s%s_thumbnail.jpg" % (PATH_USERS, USER))
+        custom = Collage(username=USER, columns=4, rows=4)
+        large = Collage(username=USER, path_users=PATH_USERS, size='standard_resolution')
+        invalid = Collage(username=USER, path_users=PATH_USERS, size='invalid_size')
+
+        assert self.user.filename.endswith('%s_thumbnail_10x2.jpg' % USER)
+        assert custom.filename.endswith('%s_thumbnail_4x4.jpg' % USER)
+        assert invalid.filename.endswith('%s_thumbnail_10x2.jpg' % USER)
+        assert large.filename.endswith('%s_standard_resolution_10x2.jpg' % USER)
+
+        self.assertEqual(self.user_path.filename, "%s%s_thumbnail_10x2.jpg" % (PATH_USERS, USER))
 
     def test_path(self):
         self.user_path.ensure_path()

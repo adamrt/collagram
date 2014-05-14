@@ -91,19 +91,19 @@ class Collage(object):
     def filename(self):
         """Return generated filename."""
 
-        if self.username:
-            return os.path.join(self.path_users, "%s_%s.jpg" % (self.username, self.size))
-        elif self.tag:
-            return os.path.join(self.path_tags, "%s_%s.jpg" % (self.tag, self.size))
-        else:
-            return None
-
     def is_valid(self):
         """Check if the username is valid."""
 
         if not self.user_id:
             return False
         return True
+        fn = "{}_{}_{}x{}.jpg".format(self.username or self.tag,
+                                      self.size,
+                                      self.columns,
+                                      self.rows)
+        path = self.path_users if self.username else self.path_tags
+        return os.path.join(path, fn)
+
 
     def is_cached(self):
         """Check for existing version of file"""
