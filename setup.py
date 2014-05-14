@@ -10,7 +10,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='collagram',
-    version='0.8.0',
+    version='0.8.1',
     author='Adam Patterson',
     author_email='adam@adamrt.com',
     url='http://github.com/vurbmedia/collagram/',
