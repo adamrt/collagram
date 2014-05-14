@@ -205,12 +205,12 @@ class Collage(object):
         blank_image = Image.new("RGB", (self.width, self.height))
 
         x = y = 0
-        for idx, url in enumerate(self.media_urls()):
+        for idx, url in enumerate(self.media_urls(), start=1):
             image_data = cStringIO.StringIO(urllib.urlopen(url).read())
             image = Image.open(image_data)
             blank_image.paste(image, (x, y))
             x += self.dimension
-            if idx == (self.columns - 1):
+            if (idx % self.columns) == 0:
                 x = 0
                 y += self.dimension
 
