@@ -5,14 +5,12 @@ from collagram import Collage, InvalidUserError, PrivateUserError
 
 USER = 'adamrt'
 USER_ID = '19226776'
-BAD_USER = 'jfjfjfjfjfjfjfjfij'
-PRIV_USER = '83howell83'
-PRIV_USER_ID = '243978586'
+INVALID_USER = 'jfjfjfjfjfjfjfjfij'
+PRIVATE_USER = '83howell83'
+PRIVATE_USER_ID = '243978586'
 
 TAG = 'vurbranch'
-BAD_TAG = 'jjjjjjjjjjjjjjjjjjjj'
-
-LARGE_SIZE = 'standard_resolution'
+INVALID_TAG = 'jjjjjjjjjjjjjjjjjjjj'
 
 PATH_USERS = '/tmp/collagram/media/users/'
 PATH_TAGS = '/tmp/collagram/media/tags/'
@@ -22,32 +20,30 @@ class TestCollage(unittest.TestCase):
 
     def setUp(self):
         self.user = Collage(username=USER, path_users=PATH_USERS)
-        self.bad_user = Collage(username=BAD_USER, path_users=PATH_USERS)
-        self.priv_user = Collage(username=PRIV_USER, path_users=PATH_USERS)
-
-        self.user_large_size = Collage(username=USER, path_users=PATH_USERS, size=LARGE_SIZE)
-        self.user_invalid_size = Collage(username=USER, path_users=PATH_USERS, size='invalid_size')
+        self.invalid_user = Collage(username=INVALID_USER, path_users=PATH_USERS)
+        self.private_user = Collage(username=PRIVATE_USER, path_users=PATH_USERS)
 
         self.tag = Collage(tag=TAG)
-        self.bad_tag = Collage(tag=BAD_TAG)
-
-        self.size = Collage(username=USER, columns=4, rows=4)
+        self.invalid_tag = Collage(tag=INVALID_TAG)
 
         self.user_path = Collage(username=USER, path_users=PATH_USERS)
         self.tag_path = Collage(tag=TAG, path_tags=PATH_TAGS)
 
-    def test_attributes(self):
+    def test_init(self):
         self.assertRaises(AttributeError, Collage)
         self.assertRaises(AttributeError, Collage, username=USER, tag=TAG)
         self.assertRaises(Exception, Collage, token=None)
 
+    def test_dimensions(self):
+        c = Collage(username=USER)
+        self.assertEqual(c.dimension, 150)
+        self.assertEqual(c.height, 300)
+        self.assertEqual(c.width, 1500)
 
-    def test_columns_and_rows(self):
-        self.assertEqual(self.user.columns, 10)
-        self.assertEqual(self.user.rows, 2)
-
-        self.assertEqual(self.size.columns, 4)
-        self.assertEqual(self.size.rows, 4)
+        c = Collage(username=USER, columns=4, rows=4, size="low_resolution")
+        self.assertEqual(c.dimension, 306)
+        self.assertEqual(c.height, 1224)
+        self.assertEqual(c.width, 1224)
 
     def test_name(self):
         self.assertEqual(self.user.name, '@' + USER)
@@ -55,14 +51,17 @@ class TestCollage(unittest.TestCase):
 
     def test_user_id(self):
         self.assertEqual(self.user.user_id, USER_ID)
-        self.assertEqual(self.bad_user.user_id, None)
-        self.assertEqual(self.priv_user.user_id, PRIV_USER_ID)
+        self.assertEqual(self.invalid_user.user_id, None)
+        self.assertEqual(self.private_user.user_id, PRIVATE_USER_ID)
         self.assertEqual(self.tag.user_id, None)
+
+    def test_validate(self):
+        self.assertRaises(InvalidUserError, self.invalid_user.validate)
 
     def test_media_json(self):
         self.assertEqual(len(self.user.media_json()), 20)
-        self.assertEqual(self.bad_user.media_json(), None)
-        self.assertRaises(PrivateUserError, self.priv_user.media_json)
+        self.assertEqual(self.invalid_user.media_json(), None)
+        self.assertRaises(PrivateUserError, self.private_user.media_json)
 
     def test_filename(self):
         custom = Collage(username=USER, columns=4, rows=4)
@@ -85,12 +84,11 @@ class TestCollage(unittest.TestCase):
     def test_generate(self):
         self.user.generate()
         self.assertEqual(os.path.exists(self.user.filename), True)
-        self.assertRaises(PrivateUserError, self.priv_user.generate)
-        self.assertRaises(InvalidUserError, self.bad_user.generate)
+        self.tag.generate()
+        self.assertEqual(os.path.exists(self.tag.filename), True)
 
-    def test_dimensions(self):
-        self.assertEqual(self.user.width, 1500)
-        self.assertEqual(self.user.height, 300)
+        self.assertRaises(PrivateUserError, self.private_user.generate)
+        self.assertRaises(InvalidUserError, self.invalid_user.generate)
 
 
 if __name__ == '__main__':

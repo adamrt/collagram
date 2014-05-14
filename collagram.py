@@ -11,7 +11,7 @@ from PIL import Image
 INSTAGRAM_TOKEN = os.environ.get('INSTAGRAM_TOKEN')
 PATH_USERS = os.path.join(os.path.dirname(__file__), 'users')
 PATH_TAGS = os.path.join(os.path.dirname(__file__), 'tags')
-SIZE_DICT = {
+SIZES = {
     'thumbnail': 150,
     'low_resolution': 306,
     'standard_resolution': 612
@@ -53,8 +53,8 @@ class Collage(object):
         self.path_tags = path_tags
         self.columns = columns
         self.rows = rows
-        self.size = size if size in SIZE_DICT else 'thumbnail'
-        self.dimension = SIZE_DICT.get(self.size, 150)
+        self.size = size if size in SIZES else 'thumbnail'
+        self.dimension = SIZES.get(self.size, 150)
         self.width = self.columns * self.dimension
         self.height = self.rows * self.dimension
 
@@ -67,10 +67,8 @@ class Collage(object):
 
         if self.username:
             return '@%s' % self.username
-        elif self.tag:
-            return '#%s' % self.tag
         else:
-            return None
+            return '#%s' % self.tag
 
     @property
     def user_id(self):
@@ -90,13 +88,6 @@ class Collage(object):
     @property
     def filename(self):
         """Return generated filename."""
-
-    def is_valid(self):
-        """Check if the username is valid."""
-
-        if not self.user_id:
-            return False
-        return True
         fn = "{}_{}_{}x{}.jpg".format(self.username or self.tag,
                                       self.size,
                                       self.columns,
@@ -104,6 +95,11 @@ class Collage(object):
         path = self.path_users if self.username else self.path_tags
         return os.path.join(path, fn)
 
+    def validate(self):
+        """Validation routines."""
+        if self.username and not self.user_id:
+            err = "User {} does not exist.".format(self.username)
+            raise InvalidUserError(err)
 
     def is_cached(self):
         """Check for existing version of file"""
@@ -114,7 +110,7 @@ class Collage(object):
         """Check if the cached file is a certain age
 
         Check if the file is younger than the number of seconds
-        specified. Return True for youger, False for older.
+        specified. Return True for younger, False for older.
         """
 
         modified = datetime.fromtimestamp(os.path.getmtime(self.filename))
@@ -145,7 +141,8 @@ class Collage(object):
                 if e.status_code == 400:
                     raise PrivateUserError("You don't have permission to view this user")
                 else:
-                    raise Exception('Unknow status: %s, Message: %s' % (e.status_code, e.error_message))
+                    err = "Unknow status: {}, Message: {}".format(e.status_code, e.error_message)
+                    raise Exception(err)
             except:
                 raise Exception
 
@@ -203,8 +200,7 @@ class Collage(object):
         after all collage is created.
         """
 
-        if not self.is_valid():
-            raise InvalidUserError("User %s does not exist." % self.username)
+        self.validate()
 
         blank_image = Image.new("RGB", (self.width, self.height))
 
