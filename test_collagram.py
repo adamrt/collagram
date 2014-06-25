@@ -25,6 +25,7 @@ class TestCollage(unittest.TestCase):
 
         self.tag = Collage(tag=TAG)
         self.invalid_tag = Collage(tag=INVALID_TAG)
+        self.count = Collage(username=USER, columns=5, rows=5)
 
         self.user_path = Collage(username=USER, path_users=PATH_USERS)
         self.tag_path = Collage(tag=TAG, path_tags=PATH_TAGS)
@@ -54,6 +55,10 @@ class TestCollage(unittest.TestCase):
         self.assertEqual(self.invalid_user.user_id, None)
         self.assertEqual(self.private_user.user_id, PRIVATE_USER_ID)
         self.assertEqual(self.tag.user_id, None)
+
+    def test_count(self):
+        self.assertEqual(self.user.count, 20)
+        self.assertEqual(self.count.count, 25)
 
     def test_validate(self):
         self.assertRaises(InvalidUserError, self.invalid_user.validate)

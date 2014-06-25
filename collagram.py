@@ -86,6 +86,12 @@ class Collage(object):
         return None
 
     @property
+    def count(self):
+        """Number of results we need"""
+
+        return self.columns * self.rows
+
+    @property
     def filename(self):
         """Return generated filename."""
         fn = "{}_{}_{}x{}.jpg".format(self.username or self.tag,
@@ -136,7 +142,7 @@ class Collage(object):
 
         if self.user_id:
             try:
-                return self.api.user_recent_media(user_id=self.user_id)[0]
+                return self.api.user_recent_media(user_id=self.user_id, count=self.count)[0]
             except InstagramAPIError as e:
                 if e.status_code == 400:
                     raise PrivateUserError("You don't have permission to view this user")
@@ -148,7 +154,7 @@ class Collage(object):
 
         elif self.tag:
             try:
-                return self.api.tag_recent_media(tag_name=self.tag)[0]
+                return self.api.tag_recent_media(tag_name=self.tag, count=self.count)[0]
             except InstagramAPIError as e:
                 raise InvalidTagError('Unable to find tag')
             except:
