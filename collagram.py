@@ -157,8 +157,6 @@ class Collage(object):
                 return self.api.tag_recent_media(tag_name=self.tag, count=self.count)[0]
             except InstagramAPIError as e:
                 raise InvalidTagError('Unable to find tag')
-            except:
-                raise Exception
 
         else:
             return None
