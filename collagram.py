@@ -9,6 +9,8 @@ from instagram.client import InstagramAPI
 from PIL import Image
 
 INSTAGRAM_TOKEN = os.environ.get('INSTAGRAM_TOKEN')
+INSTAGRAM_SECRET = os.environ.get('INSTAGRAM_SECRET')
+
 PATH_USERS = os.path.join(os.path.dirname(__file__), 'users')
 PATH_TAGS = os.path.join(os.path.dirname(__file__), 'tags')
 SIZES = {
@@ -33,8 +35,8 @@ class InvalidTagError(Exception):
 class Collage(object):
 
     def __init__(self, username=None, tag=None, token=INSTAGRAM_TOKEN,
-                 columns=10, rows=2, size='thumbnail',  path_users=PATH_USERS,
-                 path_tags=PATH_TAGS):
+                 secret=INSTAGRAM_SECRET, columns=10, rows=2, size='thumbnail',
+                 path_users=PATH_USERS, path_tags=PATH_TAGS):
 
         if username and tag:
             raise AttributeError('You may not specify both username and tag')
@@ -45,7 +47,7 @@ class Collage(object):
         if token is None:
             raise Exception('INSTAGRAM_TOKEN environment variable or the `token` attribute must be set.')
 
-        self.api = InstagramAPI(access_token=token)
+        self.api = InstagramAPI(access_token=token, client_secret=secret)
 
         self.username = username
         self.tag = tag
